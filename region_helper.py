@@ -25,7 +25,7 @@ def extract_roi_values(df: pd.DataFrame, roi_indices, axes: list) -> pd.DataFram
 
     return pd.DataFrame(roi_values)
 
-def get_number_roi_sd(df, regions_of_interest_sd, window_size, step_size)-> list:
+def get_number_roi_sd(df: pd.DataFrame, regions_of_interest_sd: list, window_size: int, step_size: int)-> list:
     '''Provides number of regions_of_interest. DataFrames with the selected regions of interest
     
     Args:
@@ -45,14 +45,14 @@ def get_number_roi_sd(df, regions_of_interest_sd, window_size, step_size)-> list
     # Loop through each region of interest (ROI)
     for i, roi in enumerate(regions_of_interest_sd):
         start_index:int = roi[0] * step_size
-        end_index = start_index + window_size
+        end_index: int = start_index + window_size
         
         # Ensure the end index does not exceed the dataframe length
         if end_index > len(df):
             end_index: int = len(df)
             
         # Select rows using iloc and columns using column names
-        selected_data = df.iloc[start_index:end_index][['Acc_X', 'Acc_Y', 'Acc_Z']]
+        selected_data: pd.DataFrame = df.iloc[start_index:end_index][['Acc_X', 'Acc_Y', 'Acc_Z']]
     
         selected_data_list.append(selected_data)
            

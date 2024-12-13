@@ -1,7 +1,7 @@
 # RS: Main Script
 # Script created 3/25/2024
 # Last revision 12/13/2024
-# Notes: Use SD method to detect regions of interest using the jerk/ snap signal. Use those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
+# Notes: Use SD method to detect regions of interest using the jerk/ snap signal. Uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
 
 import pandas as pd
 import numpy as np
@@ -32,13 +32,13 @@ def main() -> None:
     # variables for ROI_Derivative method
     factor: float = 8.0   # Factor to set jerk threshold (56.55)
     percentile: float = 95.0    # Percentile to set jerk threshold  
-    jerk_threshold: float = 5.7209199129367875e-12  # Threshold for significant jerk 1.851133536886088e-12
+    jerk_threshold: float = 5.7209199129367875e-12  # Threshold for significant jerk
     snap_threshold: float = 1  # Threshold for significant snap
 
     # variables for ROI_SD method
     # values that can be changed  to increase/ decrease sensitivity
-    window_size: int = 10000 # each cell is 5ms 10000 cells represent 2secs
-    step_size: int = 2000 # 2000 cells are 400ms (0.4secs)
+    window_size: int = 2500 # each cell is 5ms, 10000 cells represent 2secs
+    step_size: int = 833 # 2000 cells are 400ms (0.4secs)
     threshold: float = 1e-08 # default value for SD threshold 1.5
     
     file_path: str = input('Enter case number: ')
@@ -153,7 +153,7 @@ def main() -> None:
     #print(f'ua_list = {ua_list}')
     #print(f'sumua = {sumua}')
             
-    rs_2axes_py: float = process_recovery(file_path, jerk_threshold, mean_jerk, number_failed_attempts, sa_2axes, sumua)
+    rs_2axes_py: float = process_recovery(file_path, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, threshold, number_failed_attempts, sa_2axes, sumua)
 
     # display output_results in terminal
     print(f'results are:')

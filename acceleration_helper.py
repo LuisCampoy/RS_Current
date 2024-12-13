@@ -62,6 +62,7 @@ def get_max_accelerations_z(roi_values_df) -> list[float]:
         
     for i in range (len (roi_values_df)):
         amax_z:float = roi_values_df[i]['Acc_Z'].abs().max()
+        #amax_z:float = roi_values_df[i]['Acc_Z'].min() # since we care about falling this will pick the max negative acceleration
         amax_z_list.append(amax_z)
     
     return amax_z_list
