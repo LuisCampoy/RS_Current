@@ -1,8 +1,8 @@
 # RS: Main Script
 # Script created 3/25/2024
-# Last revision 12/13/2024
-# Notes: Use SD method to detect regions of interest using the jerk/ snap signal. 
-# Then it, uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
+# Last revision 12/16/2024
+# Notes: this script uses the SD method to detect regions of interest using the jerk/ snap signal. 
+# Then, it uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
 
 import pandas as pd
 import numpy as np
@@ -23,7 +23,7 @@ def main() -> None:
     target_value: float = 9.0 
     
     # variables for moving average filter
-    target_moving_avg: int = 10 # moving average window_size (4)
+    target_moving_avg: int = 10 # moving average window_size (originally set to 4)
     
     # variables for Kalman filter
     process_variance = 1e-5  # Q
@@ -34,12 +34,12 @@ def main() -> None:
     factor: float = 8.0   # Factor to set jerk threshold (56.55)
     percentile: float = 95.0    # Percentile to set jerk threshold  
     jerk_threshold: float = 5.7209199129367875e-12  # Threshold for significant jerk
-    snap_threshold: float = 1  # Threshold for significant snap
+    snap_threshold: float = 1  # Threshold for significant snap (needs re calibration)
 
     # variables for ROI_SD method
     # values that can be changed  to increase/ decrease sensitivity
-    window_size: int = 2500 # each cell is 5ms, 10000 cells represent 2secs
-    step_size: int = 833 # 2000 cells are 400ms (0.4secs)
+    window_size: int = 2500 # each cell is 5ms, 10000 cells represent 2secs, 2500 cells are 0.5secs
+    step_size: int = 833 # 2000 cells are 400ms (0.4secs), 833 cells are 166.6ms (0.166secs)
     threshold: float = 1e-08 # default value for SD threshold 1.5
     
     file_path: str = input('Enter case number: ')
