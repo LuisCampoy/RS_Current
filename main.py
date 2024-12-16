@@ -1,7 +1,8 @@
 # RS: Main Script
 # Script created 3/25/2024
 # Last revision 12/13/2024
-# Notes: Use SD method to detect regions of interest using the jerk/ snap signal. Uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
+# Notes: Use SD method to detect regions of interest using the jerk/ snap signal. 
+# Then it, uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
 
 import pandas as pd
 import numpy as np
@@ -132,7 +133,7 @@ def main() -> None:
     #selected_data_list_jerk_method: list = get_regions_jerk(jerk, roi_indices)
     #selected_data_list_snap_method: list = get_regions_snap(snap, roi_indices)
     
-    roi_values: list = get_number_roi_sd(df_moving_avg, roi_sd, window_size, step_size)
+    roi_values: list = get_number_roi_sd(df, roi_sd, window_size, step_size)
                             
     amax_x_list: list[float] = get_max_accelerations_x(roi_values)
     #print(f'amax_x_list is {amax_x_list}')
