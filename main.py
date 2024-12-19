@@ -1,6 +1,6 @@
 # RS: Main Script
 # Script created 3/25/2024
-# Last revision 12/16/2024
+# Last revision 12/18/2024
 # Notes: this script uses the SD method to detect regions of interest using the jerk/ snap signal. 
 # Then, it uses those indexes on the original Acc_Z, Acc_X, Acc_Y dataset
 
@@ -38,12 +38,12 @@ def main() -> None:
 
     # variables for ROI_SD method
     # values that can be changed  to increase/ decrease sensitivity
-    window_size: int = 2500 # each cell is 5ms, 10000 cells represent 2secs, 2500 cells are 0.5secs
-    step_size: int = 833 # 2000 cells are 400ms (0.4secs), 833 cells are 166.6ms (0.166secs)
+    window_size: int = 10000 # each cell is 5ms, 10000 cells represent 2secs, 2500 cells are 0.5secs
+    step_size: int = 2000 # 2000 cells are 400ms (0.4secs), 833 cells are 166.6ms (0.166secs)
     threshold: float = 1e-08 # default value for SD threshold 1.5
     
     file_path: str = input('Enter case number: ')
-        
+
     df: pd.DataFrame = read_csv_file(file_path)
 
     if df is not None:
@@ -79,7 +79,7 @@ def main() -> None:
     jerk, snap= calculate_derivatives(df_avg)
     print('Jerk and Snap calculated successfully')
 
-    #get_plot_jerk_snap(jerk, snap, df_avg)          
+    get_plot_jerk_snap(jerk, snap, df_avg)          
     # Converts onto pandas DataFrame
     #jerkdf = pd.DataFrame({'TimeStamp':timeStamp_np,'Jerk':jerk})
     #print('Jerk DataFrame created successfully')
@@ -111,7 +111,7 @@ def main() -> None:
     #roi_indices_df: pd.DataFrame = get_roi_indices(jerk, snap, jerk_threshold_cal, snap_threshold)
     #print('ROI indices obtained successfully')
     #print(f'ROI indices {roi_indices_df}')
-        
+    
     # Plot jerk and snap with regions of interest
     #get_plot_jerk_snap_with_roi(jerk, snap, roi_in dices_df, df_avg)
 
@@ -133,7 +133,7 @@ def main() -> None:
     #selected_data_list_jerk_method: list = get_regions_jerk(jerk, roi_indices)
     #selected_data_list_snap_method: list = get_regions_snap(snap, roi_indices)
     
-    roi_values: list = get_number_roi_sd(df, roi_sd, window_size, step_size)
+    roi_values: list = get_number_roi_sd(df_filtered, roi_sd, window_size, step_size)
                             
     amax_x_list: list[float] = get_max_accelerations_x(roi_values)
     #print(f'amax_x_list is {amax_x_list}')
