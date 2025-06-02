@@ -1,59 +1,31 @@
 # Recovery Score Calculations: Calculation helper
 # Script created  3/25/2024
-# Last revision 12/13/2024
+# Last revision 5/22/2025
 
 import pandas as pd
 
-def extract_roi_values(df: pd.DataFrame, roi_indices, axes: list) -> pd.DataFrame:
-    '''Extracts the values within each region of interest (ROI) for each specified axis from the DataFrame.
+def extract_accel_values_from_roi(df: pd.DataFrame, indexes: list[list[int]])-> list[pd.DataFrame]:
+    ''' 
+    Extracts a list of DataFrames containing the acceleration values (Acc_X, Acc_Y, Acc_Z) from each of the regions of interest.
+    Each region starts at an index = indexes[i][0] and ends at an index = indexes[i][1].
+    The function iterates through the list of indexes and extracts the corresponding acceleration values from the DataFrame.
+    It creates a new DataFrame for each region of interest, containing the acceleration values for the specified axes (Acc_X, Acc_Y, Acc_Z).
+    The extracted DataFrames are stored in a list and returned.
 
     Args:
-        df (pd.DataFrame): The input DataFrame containing the data.
-        roi_indices (pd.DataFrame): DataFrame containing the indices of regions of interest.
-        axes (list): List of axis names to extract values for (e.g., ['Acc_X', 'Acc_Y', 'Acc_Z']).
+        df (pd.DataFrame): DataFrame containing the regions of interest.
+        indexes (list): List of indexes corresponding to the regions of interest.
 
     Returns:
-        pd.DataFrame: DataFrame containing the values within each ROI for each axis.
+        list [pd.DataFrame]: list of DataFrames with the extracted acceleration values.
     '''
-    roi_values = {axis: [] for axis in axes}
-    roi_values['ROI_Index'] = []
+    print('extracting roi values...')
 
-    for index in roi_indices['ROI_Indices']:
-        for axis in axes:
-            roi_values[axis].append(df[axis].iloc[index])
-        roi_values['ROI_Index'].append(index)
+    extracted_dfs = []
+    for idx in indexes:
+        if idx[0] in df.index and idx[1] in df.index:
+            extracted_dfs.append(df.loc[idx[0]:idx[1], ['Acc_X', 'Acc_Y', 'Acc_Z']].copy())
+        else:
+            print(f"Warning: Index {idx} not found in DataFrame and will be skipped.")
 
-    return pd.DataFrame(roi_values)
-
-def get_number_roi_sd(df: pd.DataFrame, regions_of_interest_sd: list, window_size: int, step_size: int)-> list:
-    '''Provides number of regions_of_interest. DataFrames with the selected regions of interest
-    
-    Args:
-        filtered_df: pd.DataFrame provided
-        regions_of_interest_sd: list of tuples with the start and the end of each of the regions that have a standad deviation > set threshold
-        window_size (int): size of each window
-        step_size (int):step_size for the window
-        
-    Returns:
-        list: list of DataFrames, each DataFrame contains a specific region of interest, 
-               and three lists with maximum absolute values of AccX, AccY, and AccZ for each region.
-               Selected_Data_list is a list with a dataframe with AccX, AccY and AccZ per event
-    '''
-    # Store data from each reion of interest
-    selected_data_list: list = [] 
-    
-    # Loop through each region of interest (ROI)
-    for i, roi in enumerate(regions_of_interest_sd):
-        start_index:int = roi[0] * step_size
-        end_index: int = start_index + window_size
-        
-        # Ensure the end index does not exceed the dataframe length
-        if end_index > len(df):
-            end_index: int = len(df)
-            
-        # Select rows using iloc and columns using column names
-        selected_data: pd.DataFrame = df.iloc[start_index:end_index][['Acc_X', 'Acc_Y', 'Acc_Z']]
-    
-        selected_data_list.append(selected_data)
-           
-    return selected_data_list
+    return extracted_dfs

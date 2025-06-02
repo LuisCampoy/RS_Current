@@ -13,7 +13,8 @@ class CSV:
     
     @classmethod
     def initialize_csv(cls) -> None:
-        '''Initializes the CSV file. If the file does not exist, it creates a new CSV file
+        '''
+        Initializes the CSV file. If the file does not exist, it creates a new CSV file
         with the specified columns. If the file exists, it reads the file
         
         Raises:
@@ -30,7 +31,7 @@ class CSV:
             df.to_csv(cls.CSV_FILE, index = False)
 
     @classmethod
-    def add_entry(cls, date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, threshold, number_failed_attempts, sa_2axes, sumua, rs_2axes_py) -> None:
+    def add_entry(cls, date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, number_failed_attempts, sa_2axes, sumua, rs_2axes_py) -> None:
         '''Adds a new entry to the CSV file
             
         Args:
@@ -56,7 +57,6 @@ class CSV:
             'mean_jerk': mean_jerk,
             'std_jerk': std_jerk,
             'jerk_threshold_cal': jerk_threshold_cal,
-            'threshold': threshold,
             'Number_failed_attempts': number_failed_attempts,
             'sa_2axes_py': sa_2axes,
             'sumua_py': sumua,
@@ -71,7 +71,7 @@ class CSV:
             writer.writerow(new_entry)
         print('Entry added successfully')      
 
-def add_ua(file_path: str, jerk_threshold: float, mean_jerk: float, std_jerk: float, jerk_threshold_cal: float, threshold: float, number_failed_attempts: int, sa_2axes: float, sumua: float, rs_2axes_py: float) -> None:
+def add_ua(file_path: str, jerk_threshold: float, mean_jerk: float, std_jerk: float, jerk_threshold_cal: float, number_failed_attempts: int, sa_2axes: float, sumua: float, rs_2axes_py: float) -> None:
     '''Adds new UA entry to a CSV file
 
     Args:
@@ -89,9 +89,9 @@ def add_ua(file_path: str, jerk_threshold: float, mean_jerk: float, std_jerk: fl
     CSV.initialize_csv()
     date:str = get_date()
     case_number: str = rename(file_path)
-    CSV.add_entry(date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, threshold, number_failed_attempts, sa_2axes, sumua, rs_2axes_py)
+    CSV.add_entry(date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, number_failed_attempts, sa_2axes, sumua, rs_2axes_py)
 
-def add_sa(file_path :str, jerk_threshold: float, mean_jerk: float, std_jerk: float, jerk_threshold_cal: float, threshold: float, number_failed_attempts: int, sa_2axes: float, rs_2axes_py: float) -> None:
+def add_sa(file_path :str, jerk_threshold: float, mean_jerk: float, std_jerk: float, jerk_threshold_cal: float, number_failed_attempts: int, sa_2axes: float, rs_2axes_py: float) -> None:
     '''Adds entry for a single and successful attempt to a CSV file
 
     Args:
@@ -111,7 +111,7 @@ def add_sa(file_path :str, jerk_threshold: float, mean_jerk: float, std_jerk: fl
     case_number: str = rename(file_path)
     sumua = None
     #number_failed_attempts_jerk = number_failed_attempts_jerk
-    CSV.add_entry(date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, threshold, number_failed_attempts, sa_2axes, sumua, rs_2axes_py)
+    CSV.add_entry(date, case_number, jerk_threshold, mean_jerk, std_jerk, jerk_threshold_cal, number_failed_attempts, sa_2axes, sumua, rs_2axes_py)
 
 def get_date() -> str:
     '''Generates a timestamp for the backup file

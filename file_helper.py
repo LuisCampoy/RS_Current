@@ -1,16 +1,18 @@
 # Recovery Score Calculations: file_helper Script
 # Script created  3/25/2024
-# Last revision 12/13/2024
+# Last revision 5/31/2025
 
 import pandas as pd
 import numpy as np
+from scipy.signal import butter, filtfilt
 
 def read_csv_file(file_path) -> pd.DataFrame:
-    '''Adds .csv extension and the reads the first four columns (timeStamp, Acc_X, Acc_Y, Acc_Z) from the csv file
-        using the read_csv function.
-        skips the first row (Sep = ,)
-        Uses the second row as header
-        only reads the first 4 columns to speed up file reading time
+    '''
+    Adds .csv extension and the reads the first four columns (timeStamp, Acc_X, Acc_Y, Acc_Z) from the csv file
+    using the read_csv function.
+    skips the first row (Sep = ,)
+    Uses the second row as header
+    only reads the first 4 columns to speed up file reading time
 
     Args:
         file_path: case number (file_name) entered by user
@@ -48,7 +50,8 @@ def read_csv_file(file_path) -> pd.DataFrame:
         return pd.DataFrame()
     
 def add_csv_extension(file_path: str) -> str:
-    '''adds '.csv' to the file number
+    '''
+    adds '.csv' to the file number
 
     Args:
         file_path (str): Case Number
@@ -62,10 +65,11 @@ def add_csv_extension(file_path: str) -> str:
     return file_path_csv
  
 def initial_filter(df, target_value) -> pd.DataFrame:
-    '''Filters initial csv file and creates a new df ignoring initial acceleration values.
-       Looks into AccZ column (Z axis). Filters out initial values until it finds
-       the first acceleration value on the Z axis that is greater than the 'target value'
-       Signals when horse gains sternal recumbency for the first time.
+    '''
+    Filters initial signal and creates a new df ignoring initial acceleration values.
+    Looks into AccZ column (Z axis). Filters out initial values until it finds
+    the first acceleration value on the Z axis that is greater than the 'target value'
+    Signals when horse gains sternal recumbency for the first time.
         
     Args:
         df (pd.DataFrame): first four columns of the initial csv file with formated timeStamp in column 0
@@ -91,7 +95,8 @@ def initial_filter(df, target_value) -> pd.DataFrame:
         return df
     
 def apply_moving_average(df_filtered, target_moving_avg) -> pd.DataFrame:
-    '''Applies a moving average filter to the acceleration data (Acc_X, Acc_Y, Acc_Z) in the DataFrame.
+    '''
+    Applies a moving average filter to the acceleration data (Acc_X, Acc_Y, Acc_Z) in the DataFrame.
 
     Args:
         df_filtered (pd.DataFrame): DataFrame containing the raw acceleration data.
@@ -107,16 +112,18 @@ def apply_moving_average(df_filtered, target_moving_avg) -> pd.DataFrame:
     df_moving_avg['Acc_Z'] = df_filtered['Acc_Z'].rolling(window = target_moving_avg, min_periods=1).mean()
     
     return df_moving_avg
-    
+
+"""   
 def clean_data(df, target_value) -> pd.DataFrame:
-    '''Cleans the Acc_Z column in a DataFrame by setting values lower than the threshold to NaN.
+    '''
+    Cleans the Acc_Z column in a DataFrame by setting values lower than the threshold to NaN.
     
      Args:
         df (pandas.DataFrame): The input DataFrame that contains an 'Acc_Z' column.
         target_value (float): The threshold below which values are considered invalid.
     
     Returns:
-    pandas.DataFrame: The cleaned DataFrame with values below the threshold set to NaN.
+        pandas.DataFrame: The cleaned DataFrame with values below the threshold set to NaN.
     '''
     # Ensure the AccZ column exists
     if 'Acc_Z' in df.columns:
@@ -126,46 +133,27 @@ def clean_data(df, target_value) -> pd.DataFrame:
         raise KeyError('The "Acc_Z" column is not present in the DataFrame.')
     
     return df
-
-def apply_kalman_filter(df: pd.DataFrame, process_variance: float, measurement_variance: float, estimated_measurement_variance: float) -> pd.DataFrame:
-    '''Applies a Kalman filter to the Acc_X, Acc_Y, and Acc_Z columns of the input DataFrame.
+"""
+def apply_butterworth_filter(df, order, cutoff, fs) -> pd.DataFrame:
+    '''
+    Applies a Butterworth low-pass filter to the acceleration data in the DataFrame.
 
     Args:
-        df (pd.DataFrame): The input DataFrame containing Acc_X, Acc_Y, and Acc_Z columns.
-        process_variance (float): The process variance (Q).
-        measurement_variance (float): The measurement variance (R).
-        estimated_measurement_variance (float): The estimated measurement variance (P).
+        df (pd.DataFrame): DataFrame containing the raw acceleration data.
+        cutoff (float): Cutoff frequency for the low-pass filter.
+        fs (float): Sampling frequency of the data.
+        order (int): Order of the Butterworth filter.
 
     Returns:
-        pd.DataFrame: The DataFrame with Kalman filtered Acc_X, Acc_Y, and Acc_Z columns.
+        pd.DataFrame: DataFrame with the filtered acceleration data.
     '''
-    def kalman_filter(data):
-        n = len(data)
-        xhat = np.zeros(n)       # a posteri estimate of x
-        P = np.zeros(n)          # a posteri error estimate
-        xhatminus = np.zeros(n)  # a priori estimate of x
-        Pminus = np.zeros(n)     # a priori error estimate
-        K = np.zeros(n)          # gain or blending factor
-
-        # initial guesses
-        xhat[0] = data[0]
-        P[0] = estimated_measurement_variance
-
-        for k in range(1, n):
-            # time update
-            xhatminus[k] = xhat[k-1]
-            Pminus[k] = P[k-1] + process_variance
-
-            # measurement update
-            K[k] = Pminus[k] / (Pminus[k] + measurement_variance)
-            xhat[k] = xhatminus[k] + K[k] * (data[k] - xhatminus[k])
-            P[k] = (1 - K[k]) * Pminus[k]
-
-        return xhat
+    nyquist = 0.5 * fs
+    normal_cutoff = cutoff / nyquist
+    b, a = butter(order, normal_cutoff, btype='lowpass', analog=False)
 
     df_filtered = df.copy()
-    df_filtered['Acc_X'] = kalman_filter(df['Acc_X'].values)
-    df_filtered['Acc_Y'] = kalman_filter(df['Acc_Y'].values)
-    df_filtered['Acc_Z'] = kalman_filter(df['Acc_Z'].values)
+    df_filtered['Acc_X'] = filtfilt(b, a, df['Acc_X'])
+    df_filtered['Acc_Y'] = filtfilt(b, a, df['Acc_Y'])
+    df_filtered['Acc_Z'] = filtfilt(b, a, df['Acc_Z'])
 
     return df_filtered

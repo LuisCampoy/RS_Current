@@ -3,10 +3,11 @@
 # Last revision 12/3/2024
 
 from numpy import sqrt
-#import pandas as pd
+import pandas as pd
 
-def get_max_accelerations_x(roi_values_df) -> list[float]:
-    ''' Create a list with the maximum absolute values 
+def get_max_accelerations(roi_accel_values: list[pd.DataFrame]) -> tuple[list[float], list[float], list[float]]:
+    ''' 
+    Creates a list with the maximum absolute values 
         for each attempt   
 
     Args:
@@ -14,58 +15,26 @@ def get_max_accelerations_x(roi_values_df) -> list[float]:
         One per event with three columns (AccX, AccY and AccZ)
 
     Returns:
-        list [float]
+        tuple[list[float], list[float], list[float]]
     '''
-   
+    print('calculating max accelerations...')
+
+    # Create empty lists to store the maximum absolute values for each axis
     amax_x_list:list[float] = []
-        
-    for i in range (len (roi_values_df)):
-        amax_x:float = roi_values_df[i]['Acc_X'].abs().max()
-        amax_x_list.append(amax_x)
-    
-    return amax_x_list
-
-def get_max_accelerations_y(roi_values_df) -> list[float]:
-    ''' Create a list with the maximum absolute values 
-        for each attempt 
-        
-    Args:
-        selected_data_list: list with a list of dataframes. 
-        One per event with three columns (AccX, AccY and AccZ)
-
-    Returns:
-        list [float]
-    '''
-   
     amax_y_list:list[float] = []
-        
-    for i in range (len (roi_values_df)):
-        amax_y:float = roi_values_df[i]['Acc_Y'].abs().max()
-        amax_y_list.append(amax_y)
-    
-    return amax_y_list
-        
-def get_max_accelerations_z(roi_values_df) -> list[float]:
-    ''' Create a list with the maximum absolute values for each attempt 
-        for 'Acc_Z'
-
-    Args:
-        selected_data_list: list with a list of dataframes. 
-        One per event with three columns (Acc_X, Acc_Y and Acc_Z)
-
-    Returns:
-        list [float]
-
-    '''
-   
     amax_z_list:list[float] = []
-        
-    for i in range (len (roi_values_df)):
-        amax_z:float = roi_values_df[i]['Acc_Z'].abs().max()
-        #amax_z:float = roi_values_df[i]['Acc_Z'].min() # since we care about falling this will pick the max negative acceleration
+
+    # Loop through each DataFrame in the list and calculate the maximum absolute values
+    # for each axis (AccX, AccY, AccZ)
+    for i in range(len(roi_accel_values)):
+        amax_x:float = roi_accel_values[i]['Acc_X'].abs().max()
+        amax_x_list.append(amax_x)
+        amax_y:float = roi_accel_values[i]['Acc_Y'].abs().max()
+        amax_y_list.append(amax_y)
+        amax_z:float = roi_accel_values[i]['Acc_Z'].abs().max()
         amax_z_list.append(amax_z)
-    
-    return amax_z_list
+
+    return amax_x_list, amax_y_list, amax_z_list
 
 def get_sa(amax_x_list, amax_y_list, amax_z_list) -> float:
     ''' Calculate the squared root (SQRT) of the sum of the squares 
