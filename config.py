@@ -15,14 +15,14 @@ BUTTERWORTH_CUTOFF: float = 2.0  # Cutoff frequency for the Butterworth filter
 FS: int = 200  # Sampling frequency (Hz)
 
 # variables for Derivative
-FACTOR: float = 5.0   # Adjusted factor to set jerk threshold
-PERCENTILE: float = 95.0    # Adjusted percentile to set jerk threshold
-JERK_THRESHOLD: float = 1.0253383436586553e-08 #4.64e-07  # Threshold for significant jerk
+FACTOR: float = 3.0   # Adjusted factor to set jerk threshold
+PERCENTILE: float = 85.0    # Adjusted percentile to set jerk threshold
+JERK_THRESHOLD: float = 4.0e-08 #4.64e-07  # Threshold for significant jerk
 
 # variables for ROI_SD method
 # values can be changed  to increase/ decrease sensitivity
 # WINDOW_SIZE: increase to detect over longer intervals
-WINDOW_SIZE: int = 2000 # each cell is 5ms, 10000 cells represent 2secs, 2500 cells are 0.5secs. longer events 8000
+WINDOW_SIZE: int = 4000 # each cell is 5ms, 10000 cells represent 2secs, 2500 cells are 0.5secs. longer events 8000
 STEP_SIZE: int = int(WINDOW_SIZE / 4) # 2000 cells are 400ms (0.4secs), 833 cells are 166.6ms (0.166secs). longer events 2000
 #THRESHOLD: float = 0.0 # default value for SD threshold 1.5 (1.5e-08)
 
